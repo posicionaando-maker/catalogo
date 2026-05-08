@@ -1,0 +1,28 @@
+{
+  "productos": [
+    {
+      "id": 1,
+      "nombre": "Leche Entera",
+      "categoria": "Lácteos",
+      "cantidad": 20,
+      "costo": 0.8,
+      "precioVenta": 1.2
+    },
+    {
+      "id": 2,
+      "nombre": "Pan Integral",
+      "categoria": "Panadería",
+      "cantidad": 15,
+      "costo": 0.5,
+      "precioVenta": 0.9
+    },
+    {
+      "id": 3,
+      "nombre": "Café Molido",
+      "categoria": "Bebidas",
+      "cantidad": 10,
+      "costo": 2.5,
+      "precioVenta": 4.0
+    }
+  ]
+}

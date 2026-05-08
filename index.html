@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#ff9900">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="MiTiendita Catálogo">
+    <title>Catálogo Mi Tiendita</title>
+    <link rel="manifest" href="manifest-catalogo.json">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Amazon Ember', system-ui, sans-serif;
+            background: #eaeced;
+            padding: 12px;
+        }
+
+        .app {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #232f3e, #1a2532);
+            color: white;
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: white;
+            padding: 6px;
+            border-radius: 60px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            color: #232f3e;
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            background: #ff9900;
+            color: #232f3e;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fade 0.3s ease;
+        }
+
+        @keyframes fade {
+            from { opacity: 0; transform: translateY(10px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+
+        .productos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+
+        .producto-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+
+        .producto-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+
+        .producto-imagen {
+            background: linear-gradient(135deg, #f7f7f7, #e2e2e2);
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+        }
+
+        .producto-info {
+            padding: 16px;
+        }
+
+        .producto-nombre {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #232f3e;
+            margin-bottom: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .producto-categoria {
+            font-size: 0.75rem;
+            color: #565959;
+            margin-bottom: 8px;
+        }
+
+        .producto-precio {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #b12704;
+            margin: 8px 0;
+        }
+
+        .producto-precio small {
+            font-size: 0.7rem;
+            font-weight: normal;
+        }
+
+        .producto-stock {
+            font-size: 0.8rem;
+            margin: 8px 0;
+            padding: 4px 8px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .stock-disponible {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .stock-agotado {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .stock-bajo {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .btn-whatsapp-producto {
+            background: #25d366;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 10px;
+            border-radius: 30px;
+            margin-top: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+
+        .btn-whatsapp-producto:hover {
+            background: #128C7E;
+        }
+
+        .importador-container {
+            background: white;
+            padding: 24px;
+            border-radius: 20px;
+            margin-bottom: 24px;
+        }
+
+        .importador-opciones {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            justify-content: center;
+            margin-top: 16px;
+        }
+        .btn-importar {
+            background: #ff9900;
+            color: #232f3e;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+        .btn-importar:hover {
+            background: #e68a00;
+        }
+        .btn-whatsapp-general {
+            background: #25d366;
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 16px;
+        }
+        .info-catalogo {
+            background: #e8f4fd;
+            padding: 12px;
+            border-radius: 12px;
+            margin-top: 16px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #0066c0;
+        }
+        .sin-productos {
+            text-align: center;
+            padding: 60px 20px;
+            color: #565959;
+        }
+        .modal-qr {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal-qr.show {
+            display: flex;
+        }
+        .modal-contenido-qr {
+            background: white;
+            padding: 28px;
+            border-radius: 28px;
+            text-align: center;
+            max-width: 320px;
+        }
+        .numero-whatsapp {
+            font-family: monospace;
+            background: #f0f0f0;
+            padding: 8px;
+            border-radius: 12px;
+            margin: 12px 0;
+            font-size: 1.2rem;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #565959;
+            font-size: 0.75rem;
+        }
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: #ff9900;
+            font-size: 1.2rem;
+        }
+        .ultima-actualizacion {
+            font-size: 0.7rem;
+            margin-top: 8px;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+<div class="app">
+    <header class="header">
+        <h1>📱 Catálogo Mi Tiendita</h1>
+        <p>🛍️ Productos disponibles | 💬 Consulta por WhatsApp</p>
+        <div id="fechaActualizacion" class="ultima-actualizacion"></div>
+    </header>
+
+    <nav class="tabs">
+        <button class="tab active" data-tab="catalogo">🛍️ Catálogo</button>
+        <button class="tab" data-tab="importar">📥 Importar datos</button>
+    </nav>
+
+    <!-- Pestaña Catálogo -->
+    <div id="catalogo" class="tab-content active">
+        <div id="productosContainer" class="productos-grid">
+            <div class="loading">🔄 Cargando catálogo...</div>
+        </div>
+        <div style="text-align: center;">
+            <button id="btnWhatsappGeneral" class="btn-whatsapp-general">
+                💬 Contactar por WhatsApp
+            </button>
+        </div>
+    </div>
+
+    <!-- Pestaña Importar -->
+    <div id="importar" class="tab-content">
+        <div class="importador-container">
+            <h3>📂 Importar inventario</h3>
+            <p>Puedes actualizar el catálogo manualmente si lo deseas</p>
+            <div class="importador-opciones">
+                <button id="btnImportarArchivo" class="btn-importar">📁 Seleccionar archivo JSON</button>
+                <button id="btnImportarUrl" class="btn-importar">🌐 Importar desde URL</button>
+            </div>
+            <input type="file" id="archivoJson" accept=".json" style="display:none">
+            <div class="importador-opciones" style="margin-top: 16px;">
+                <input type="text" id="urlJson" placeholder="https://.../inventario.json" style="flex:1; padding:12px; border-radius:50px; border:1px solid #ddd;">
+            </div>
+            <div class="info-catalogo">
+                ⚡ El catálogo se actualiza automáticamente desde la web.<br>
+                <strong>URL automática:</strong> https://posicionaando-maker.github.io/catalogo/inventario.json
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal WhatsApp -->
+<div id="modalContacto" class="modal-qr">
+    <div class="modal-contenido-qr">
+        <h3>📱 Contactar vendedora</h3>
+        <div id="qrPlaceholder" style="font-size: 4rem; margin: 16px;">💬</div>
+        <div class="numero-whatsapp" id="numeroWhatsappDisplay">+593 XX XXX XXXX</div>
+        <p>Haz clic en el número para abrir WhatsApp</p>
+        <button id="cerrarModal" class="btn-importar" style="margin-top: 16px;">Cerrar</button>
+    </div>
+</div>
+
+<script>
+    // ==================== CONFIGURACIÓN ====================
+    // ⚙️ CAMBIA ESTE NÚMERO POR EL WHATSAPP DE LA EMPLEADA (código país + número, sin espacios ni +)
+    const NUMERO_VENDEDORA = "593987654321"; // Ejemplo: 593 98 765 4321
+    
+    // URL FIJA donde está el inventario en GitHub Pages
+    const URL_INVENTARIO_AUTOMATICO = "inventario.json";
+    
+    let productos = [];
+    
+    // ==================== LOCALSTORAGE ====================
+    function guardarProductosEnStorage() {
+        localStorage.setItem('catalogo_productos', JSON.stringify(productos));
+        localStorage.setItem('catalogo_fecha', new Date().toISOString());
+    }
+    
+    function cargarProductosDeStorage() {
+        const stored = localStorage.getItem('catalogo_productos');
+        if (stored) {
+            productos = JSON.parse(stored);
+            return true;
+        }
+        return false;
+    }
+    
+    function mostrarFechaActualizacion() {
+        const fecha = localStorage.getItem('catalogo_fecha');
+        if (fecha) {
+            const date = new Date(fecha);
+            document.getElementById('fechaActualizacion').innerHTML = `📅 Última actualización: ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+        }
+    }
+    
+    // ==================== RENDERIZAR CATÁLOGO ====================
+    function obtenerClaseStock(cantidad) {
+        if (cantidad <= 0) return 'stock-agotado';
+        if (cantidad < 5) return 'stock-bajo';
+        return 'stock-disponible';
+    }
+    
+    function obtenerTextoStock(cantidad) {
+        if (cantidad <= 0) return '❌ Agotado';
+        if (cantidad < 5) return `⚠️ Últimas ${cantidad} unidades`;
+        return `✅ Disponible (${cantidad})`;
+    }
+    
+    function renderizarCatalogo() {
+        const container = document.getElementById('productosContainer');
+        
+        if (!productos || productos.length === 0) {
+            container.innerHTML = `
+                <div class="sin-productos">
+                    🏷️ No hay productos cargados<br>
+                    Ve a la pestaña "Importar datos" o espera la carga automática
+                </div>
+            `;
+            return;
+        }
+        
+        const productosOrdenados = [...productos].sort((a,b) => a.nombre.localeCompare(b.nombre));
+        
+        container.innerHTML = productosOrdenados.map(p => {
+            const stockClass = obtenerClaseStock(p.cantidad);
+            const stockText = obtenerTextoStock(p.cantidad);
+            const mensajeWhatsapp = encodeURIComponent(`Hola! Vi el catálogo y me interesa el producto: ${p.nombre} ($${p.precioVenta.toFixed(2)})`);
+            const enlaceWhatsapp = `https://wa.me/${NUMERO_VENDEDORA}?text=${mensajeWhatsapp}`;
+            
+            // Icono según categoría
+            let icono = '🎁';
+            const cat = (p.categoria || '').toLowerCase();
+            if (cat.includes('lácteo') || cat.includes('leche')) icono = '🥛';
+            else if (cat.includes('pan') || cat.includes('panadería')) icono = '🍞';
+            else if (cat.includes('bebida') || cat.includes('café')) icono = '☕';
+            else if (cat.includes('grano') || cat.includes('arroz')) icono = '🌾';
+            else if (cat.includes('aceite')) icono = '🫒';
+            else if (cat.includes('fruta')) icono = '🍎';
+            else if (cat.includes('verdura')) icono = '🥬';
+            
+            return `
+                <div class="producto-card">
+                    <div class="producto-imagen">${icono}</div>
+                    <div class="producto-info">
+                        <div class="producto-nombre">${escapeHtml(p.nombre)}</div>
+                        <div class="producto-categoria">📁 ${escapeHtml(p.categoria) || 'General'}</div>
+                        <div class="producto-precio">$${p.precioVenta.toFixed(2)} <small>c/u</small></div>
+                        <div class="producto-stock ${stockClass}">${stockText}</div>
+                        <button class="btn-whatsapp-producto" onclick="window.open('${enlaceWhatsapp}', '_blank')">
+                            💬 Preguntar por este producto
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+    
+    // ==================== IMPORTAR DATOS (desde JSON) ====================
+    function importarDatos(datos) {
+        try {
+            if (datos.productos && Array.isArray(datos.productos)) {
+                productos = datos.productos;
+            } else if (Array.isArray(datos)) {
+                productos = datos;
+            } else {
+                throw new Error('Formato no reconocido');
+            }
+            
+            productos = productos.filter(p => p.nombre && typeof p.precioVenta !== 'undefined');
+            productos.forEach(p => {
+                p.cantidad = p.cantidad || 0;
+                p.precioVenta = parseFloat(p.precioVenta) || 0;
+                p.costo = parseFloat(p.costo) || 0;
+            });
+            
+            guardarProductosEnStorage();
+            renderizarCatalogo();
+            mostrarFechaActualizacion();
+            
+            return true;
+        } catch (e) {
+            console.error(e);
+            return false;
+        }
+    }
+    
+    // ==================== CARGA AUTOMÁTICA DESDE GITHUB ====================
+    async function cargarAutomatico() {
+        const container = document.getElementById('productosContainer');
+        container.innerHTML = '<div class="loading">🔄 Cargando catálogo desde la web...</div>';
+        
+        try {
+            // Intentar cargar desde la URL fija
+            const respuesta = await fetch(URL_INVENTARIO_AUTOMATICO, { cache: 'no-store' });
+            
+            if (respuesta.ok) {
+                const datos = await respuesta.json();
+                if (importarDatos(datos)) {
+                    console.log('✅ Catálogo cargado automáticamente desde inventario.json');
+                    return true;
+                }
+            }
+            throw new Error('No se pudo cargar');
+        } catch (error) {
+            console.log('⚠️ No se pudo cargar desde inventario.json, usando caché local');
+            
+            // Si no hay internet o no existe el archivo, usar lo que haya en localStorage
+            if (cargarProductosDeStorage()) {
+                renderizarCatalogo();
+                mostrarFechaActualizacion();
+                return true;
+            }
+            
+            // Si no hay nada, mostrar mensaje
+            document.getElementById('productosContainer').innerHTML = `
+                <div class="sin-productos">
+                    📭 No hay productos disponibles<br>
+                    La empleada debe exportar el inventario y subirlo a la web.
+                </div>
+            `;
+            return false;
+        }
+    }
+    
+    // ==================== IMPORTAR MANUAL ====================
+    document.getElementById('btnImportarArchivo').onclick = () => {
+        document.getElementById('archivoJson').click();
+    };
+    
+    document.getElementById('archivoJson').onchange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            try {
+                const datos = JSON.parse(event.target.result);
+                if (importarDatos(datos)) {
+                    alert('✅ Catálogo actualizado correctamente');
+                } else {
+                    alert('❌ Formato de archivo inválido');
+                }
+            } catch (err) {
+                alert('❌ Error: el archivo no es un JSON válido');
+            }
+        };
+        reader.readAsText(file);
+    };
+    
+    document.getElementById('btnImportarUrl').onclick = async () => {
+        const url = document.getElementById('urlJson').value.trim();
+        if (!url) {
+            alert('Ingresa una URL válida');
+            return;
+        }
+        
+        try {
+            const resp = await fetch(url);
+            if (!resp.ok) throw new Error('No se pudo descargar');
+            const datos = await resp.json();
+            if (importarDatos(datos)) {
+                alert('✅ Catálogo actualizado desde URL');
+                document.getElementById('urlJson').value = '';
+            } else {
+                alert('❌ Formato de archivo inválido');
+            }
+        } catch (err) {
+            alert('❌ Error al importar desde URL');
+        }
+    };
+    
+    // ==================== WHATSAPP GENERAL ====================
+    function abrirWhatsappGeneral() {
+        const mensajeGeneral = encodeURIComponent('Hola, vi el catálogo y me interesan sus productos. ¿Podría darme más información?');
+        const url = `https://wa.me/${NUMERO_VENDEDORA}?text=${mensajeGeneral}`;
+        window.open(url, '_blank');
+    }
+    
+    document.getElementById('btnWhatsappGeneral').onclick = () => {
+        const modal = document.getElementById('modalContacto');
+        const numeroFormateado = NUMERO_VENDEDORA.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3');
+        document.getElementById('numeroWhatsappDisplay').innerHTML = `+${numeroFormateado}`;
+        modal.classList.add('show');
+    };
+    
+    document.getElementById('cerrarModal').onclick = () => {
+        document.getElementById('modalContacto').classList.remove('show');
+    };
+    
+    window.onclick = (e) => {
+        const modal = document.getElementById('modalContacto');
+        if (e.target === modal) modal.classList.remove('show');
+    };
+    
+    // ==================== NAVEGACIÓN ====================
+    function cambiarTab(tabId) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        document.querySelectorAll('.tab').forEach(btn => btn.classList.remove('active'));
+        document.querySelector(`.tab[data-tab="${tabId}"]`).classList.add('active');
+    }
+    
+    document.querySelectorAll('.tab').forEach(btn => {
+        btn.addEventListener('click', () => cambiarTab(btn.dataset.tab));
+    });
+    
+    // ==================== UTILIDADES ====================
+    function escapeHtml(texto) {
+        if (!texto) return '';
+        return texto.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+    
+    // ==================== INICIALIZACIÓN ====================
+    (async function init() {
+        // Intentar carga automática desde inventario.json
+        await cargarAutomatico();
+        cambiarTab('catalogo');
+        
+        // Recargar automáticamente cada 5 minutos (opcional)
+        setInterval(() => {
+            cargarAutomatico();
+        }, 300000);
+    })();
+</script>
+
+<script>
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw-catalogo.js').then(() => {
+            console.log('Service Worker registrado');
+        });
+    }
+</script>
+</body>
+</html>
